@@ -16,7 +16,7 @@ CREATE TABLE repos (
     updated DATETIME
 );
 
-CREATE TABLE language (
+CREATE TABLE languages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50),
     created DATETIME,
