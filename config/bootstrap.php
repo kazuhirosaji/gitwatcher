@@ -193,3 +193,6 @@ if (Configure::read('debug')) {
 DispatcherFactory::add('Asset');
 DispatcherFactory::add('Routing');
 DispatcherFactory::add('ControllerFactory');
+
+/* set User agent */
+ini_set('user_agent', 'gitwatcher');
