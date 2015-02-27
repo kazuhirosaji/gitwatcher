@@ -45,4 +45,10 @@ class LanguagesTable extends Table
 
         return $validator;
     }
+
+    public function getLanguage($user_name) {
+        $repos = file_get_contents('https://api.github.com/users/'.$user_name.'/repos');
+        $repos = json_decode($repos , true);
+        return $repos;
+    }
 }

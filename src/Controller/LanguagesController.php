@@ -45,16 +45,29 @@ class LanguagesController extends AppController
      */
     public function add()
     {
-        $language = $this->Languages->newEntity();
         if ($this->request->is('post')) {
-            $language = $this->Languages->patchEntity($language, $this->request->data);
-            if ($this->Languages->save($language)) {
+            var_dump($this->request->data);
+            $repos = $this->Languages->getLanguage($this->request->data['name']);
+            $is_saved = false;
+            foreach($repos as $repo) {
+                $data = array();
+                $data['name'] = $repo['language'];
+                if ($data['name']) {
+                    $language = $this->Languages->newEntity();
+                    $repo_lang = $this->Languages->patchEntity($language, $data);
+                    if ($this->Languages->save($repo_lang)) {
+                        $is_saved = true;
+                    } else {
+                        $this->Flash->error('The language could not be saved. Please, try again.');
+                    }                    
+                }
+            }
+            if ($is_saved) {
                 $this->Flash->success('The language has been saved.');
                 return $this->redirect(['action' => 'index']);
-            } else {
-                $this->Flash->error('The language could not be saved. Please, try again.');
             }
         }
+        $language = $this->Languages->newEntity();
         $this->set(compact('language'));
         $this->set('_serialize', ['language']);
     }

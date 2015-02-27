@@ -9,7 +9,7 @@
 <div class="languages form large-10 medium-9 columns">
     <?= $this->Form->create($language); ?>
     <fieldset>
-        <legend><?= __('Add Language') ?></legend>
+        <legend><?= __('Add language from Github user name') ?></legend>
         <?php
             echo $this->Form->input('name');
         ?>
