@@ -43,6 +43,11 @@ class LanguagesTable extends Table
             ->allowEmpty('id', 'create')
             ->allowEmpty('name');
 
+        $validator
+            ->add('name', [
+                'unique' => ['rule' => 'validateUnique', 'provider' => 'table']
+                ]);
+
         return $validator;
     }
 
