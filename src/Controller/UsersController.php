@@ -2,6 +2,9 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Model\Table\LanguagesTable;
+use Cake\ORM\TableRegistry;
+
 
 /**
  * Users Controller
@@ -10,7 +13,6 @@ use App\Controller\AppController;
  */
 class UsersController extends AppController
 {
-
     /**
      * Index method
      *
@@ -38,6 +40,12 @@ class UsersController extends AppController
         $this->set('_serialize', ['user']);
     }
 
+
+    private function getGithubRepos($user_name) {
+        $repos = file_get_contents('https://api.github.com/users/'.$user_name.'/repos');
+        return json_decode($repos , true);
+    }
+
     /**
      * Add method
      *
@@ -46,14 +54,71 @@ class UsersController extends AppController
     public function add()
     {
         $user = $this->Users->newEntity();
+
+
         if ($this->request->is('post')) {
+
             $user = $this->Users->patchEntity($user, $this->request->data);
-            if ($this->Users->save($user)) {
+            $user = $this->Users->save($user);
+            if ($user) {
                 $this->Flash->success('The user has been saved.');
-                return $this->redirect(['action' => 'index']);
             } else {
                 $this->Flash->error('The user could not be saved. Please, try again.');
+                return $this->redirect(['action' => 'index']);
             }
+
+            $languages = TableRegistry::get('Languages');
+            $repos = TableRegistry::get('Repos');
+
+            $repositories = $this->getGithubRepos($this->request->data['name']);
+            $is_saved = false;
+
+            foreach($repositories as $repository) {
+                // save language
+                $data = array();
+                $data['name'] = $repository['language'];
+                unset($language);
+
+                if ($data['name']) {
+                    $query = $languages->find('all', [
+                        'conditions' => ['Languages.name' => $data['name']]
+                    ]);
+                    $language = $query->first();
+
+                    if (!$language) {
+                        $language = $languages->newEntity();
+                        $repo_lang = $languages->patchEntity($language, $data);
+                        $language = $languages->save($repo_lang);
+                        if ($language) {
+                            $is_saved = true;
+                        } else {
+                            $this->Flash->error('The language could not be saved. Please, try again.');
+                        }                    
+                    }
+
+                }
+
+                // save repo
+                $is_saved = false;
+                $data = array();
+                $data['title'] = $repository['name'];
+                $data['url'] = $repository['html_url'];
+                $data['language_id'] = $language['id'];
+                $data['user_id'] = $user['id'];
+                if ($data['title']) {
+                    $repo = $repos->newEntity();
+                    $repo = $repos->patchEntity($repo, $data);
+                    if ($repos->save($repo)) {
+                        $is_saved = true;
+                    } else {
+                        $this->Flash->error('The repository could not be saved. Please, try again.');
+                    }                    
+                }
+            }
+            if ($is_saved) {
+                $this->Flash->success('The language has been saved.');
+            }
+            return $this->redirect(['action' => 'index']);
         }
         $this->set(compact('user'));
         $this->set('_serialize', ['user']);
