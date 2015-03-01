@@ -32,9 +32,16 @@
 </div>
 <div class="users view large-10 medium-9 columns">
     <h2><?= h($user->name) . "'s commit counts graph" ?></h2>
-    <?php foreach ($commit_dates as $day => $count): ?>
-    <p><?= $day . " : " . $count . " commits"; ?>
-    <?php endforeach; ?>
+    <?php
+    echo $this->GoogleChart->create()
+        ->setType('bar', array('vertical', 'grouped'))
+        ->setSize(700, 400)
+        ->setMargins(5, 5, 5, 5)
+        ->addData($commit_dates)
+        ->addMarker('value', array('format' => 'f1', 'placement' => 'c'))
+        ->addAxis('x', array('labels' => $dates))
+        ->addAxis('y', array('axis_or_tick' => 'l', 'size' => 12));
+    ?>
 </div>
 <div class="related row">
     <div class="column large-12">

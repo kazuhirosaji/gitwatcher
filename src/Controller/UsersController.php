@@ -13,6 +13,7 @@ use Cake\ORM\TableRegistry;
  */
 class UsersController extends AppController
 {
+    public $helpers = array('GoogleChart');
     /**
      * Index method
      *
@@ -40,16 +41,18 @@ class UsersController extends AppController
 
         $ONEDAY = 24 * 60 * 60;
         $commit_dates = array();
+        $dates = array();
         $lastMonth = time() + (-30 * $ONEDAY);
         $now = time();
         for($day = $lastMonth; $day < $now + $ONEDAY; $day += $ONEDAY) {
+            $dates[] = date('d', $day);
             $commit_dates[date('Y-m-d', $day)] = 0;
         }
         foreach($events as $event) {
             $created = substr($event['created_at'], 0, 10);
             $commit_dates[$created]++;
         }
-        $this->set(compact('user', 'commit_dates'));
+        $this->set(compact('user', 'commit_dates', 'dates'));
         $this->set('_serialize', ['user']);
     }
 
