@@ -36,10 +36,27 @@ class UsersController extends AppController
         $user = $this->Users->get($id, [
             'contain' => ['Repos']
         ]);
-        $this->set('user', $user);
+        $events = $this->getGithubEvents($user['name']);
+
+        $ONEDAY = 24 * 60 * 60;
+        $commit_dates = array();
+        $lastMonth = time() + (-30 * $ONEDAY);
+        $now = time();
+        for($day = $lastMonth; $day < $now + $ONEDAY; $day += $ONEDAY) {
+            $commit_dates[date('Y-m-d', $day)] = 0;
+        }
+        foreach($events as $event) {
+            $created = substr($event['created_at'], 0, 10);
+            $commit_dates[$created]++;
+        }
+        $this->set(compact('user', 'commit_dates'));
         $this->set('_serialize', ['user']);
     }
 
+    private function getGithubEvents($user_name) {
+        $events = file_get_contents('https://api.github.com/users/'.$user_name.'/events');
+        return json_decode($events , true);
+    }
 
     private function getGithubRepos($user_name) {
         $repos = file_get_contents('https://api.github.com/users/'.$user_name.'/repos');

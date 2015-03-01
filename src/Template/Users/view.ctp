@@ -30,6 +30,12 @@
         </div>
     </div>
 </div>
+<div class="users view large-10 medium-9 columns">
+    <h2><?= h($user->name) . "'s commit counts graph" ?></h2>
+    <?php foreach ($commit_dates as $day => $count): ?>
+    <p><?= $day . " : " . $count . " commits"; ?>
+    <?php endforeach; ?>
+</div>
 <div class="related row">
     <div class="column large-12">
     <h4 class="subheader"><?= __('Related Repos') ?></h4>
