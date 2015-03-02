@@ -20,7 +20,7 @@
     <?php foreach ($users as $user): ?>
         <tr>
             <td><?= $this->Number->format($user->id) ?></td>
-            <td><?= h($user->name) ?></td>
+            <td><?= $this->Html->link(__(h($user->name), true), "https://github.com/". h($user->name), array('target'=>'_blank'));?></td>
             <td><?= h($user->email) ?></td>
             <td class="actions">
                 <?= $this->Html->link(__('View'), ['action' => 'view', $user->id]) ?>
