@@ -15,10 +15,7 @@
             <th><?= $this->Paginator->sort('id') ?></th>
             <th><?= $this->Paginator->sort('title') ?></th>
             <th><?= $this->Paginator->sort('user_id') ?></th>
-            <th><?= $this->Paginator->sort('url') ?></th>
             <th><?= $this->Paginator->sort('language_id') ?></th>
-            <th><?= $this->Paginator->sort('created') ?></th>
-            <th><?= $this->Paginator->sort('updated') ?></th>
             <th class="actions"><?= __('Actions') ?></th>
         </tr>
     </thead>
@@ -26,16 +23,13 @@
     <?php foreach ($repos as $repo): ?>
         <tr>
             <td><?= $this->Number->format($repo->id) ?></td>
-            <td><?= h($repo->title) ?></td>
+            <td><?= $this->Html->link(__(h($repo->title), true), h($repo->url), array('target'=>'_blank'));?></td>
             <td>
                 <?= $repo->has('user') ? $this->Html->link($repo->user->name, ['controller' => 'Users', 'action' => 'view', $repo->user->id]) : '' ?>
             </td>
-            <td><?= h($repo->url) ?></td>
             <td>
                 <?= $repo->has('language') ? $this->Html->link($repo->language->name, ['controller' => 'Languages', 'action' => 'view', $repo->language->id]) : '' ?>
             </td>
-            <td><?= h($repo->created) ?></td>
-            <td><?= h($repo->updated) ?></td>
             <td class="actions">
                 <?= $this->Html->link(__('View'), ['action' => 'view', $repo->id]) ?>
                 <?= $this->Html->link(__('Edit'), ['action' => 'edit', $repo->id]) ?>
